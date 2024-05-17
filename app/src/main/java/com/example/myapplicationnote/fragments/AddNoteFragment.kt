@@ -1,6 +1,7 @@
 package com.example.myapplicationnote.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,6 +35,18 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
     ): View? {
         // Inflate the layout for this fragment
         addNoteBinding = FragmentAddNoteBinding.inflate(inflater, container, false)
+        try {
+            binding.etNoteContent.setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus){
+                        binding.styleBar.visibility=View.VISIBLE
+                        binding.etNoteContent.setStylesBar(binding.styleBar)
+                }else{
+                    binding.styleBar.visibility=View.GONE
+                }
+            }
+        }catch (e:Throwable){
+            Log.d("Tag", e.stackTraceToString())
+        }
         return binding.root
     }
 
@@ -47,7 +60,8 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
 
     private fun saveNote(view: View) {
         val noteTitle = binding.addNoteTitle.text.toString().trim()
-        val noteDesc = binding.addNoteDesc.text.toString().trim()
+        //val noteDesc = binding.addNoteDesc.text.toString().trim()
+        val noteDesc=binding.etNoteContent.getMD().trim()
         if (noteTitle.isNotEmpty()) {
             val note = Note(0, noteTitle, noteDesc)
             notesViewModel.addNote(note)

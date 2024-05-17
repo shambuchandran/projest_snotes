@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:id="@+id/addNoteRelative"
         tools:context=".NewNoteFragment"
         android:padding="12dp"
         android:layout_marginTop="?actionBarSize">
@@ -42,9 +43,34 @@
             android:gravity="top"
             android:padding="12dp"
             android:textSize="18sp"
+            android:visibility="gone"
             android:fontFamily="@font/poppins"
             android:background="@drawable/borderstyle"
             android:layout_below="@id/addNoteTitle"
             android:layout_marginTop="12dp" />
+        <com.yahiaangelo.markdownedittext.MarkdownEditText
+            android:id="@+id/etNoteContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/borderstyle"
+            android:layout_below="@id/addNoteDesc"
+            android:gravity="top"
+            android:layout_marginTop="12dp"
+            android:hint="Enter the description"
+            android:importantForAutofill="no"
+            android:inputType="none"
+            android:fontFamily="@font/poppins"
+            android:padding="12dp"
+            android:textSize="18sp">
+        </com.yahiaangelo.markdownedittext.MarkdownEditText>
+        <com.yahiaangelo.markdownedittext.MarkdownStylesBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/style_bar"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:elevation="4dp"
+            android:visibility="gone"
+            android:padding="12dp"/>
     </RelativeLayout>
 </layout>

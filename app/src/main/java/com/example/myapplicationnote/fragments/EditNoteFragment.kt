@@ -2,6 +2,7 @@ package com.example.myapplicationnote.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.marginBottom
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -39,6 +41,23 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     ): View? {
         // Inflate the layout for this fragment
         editNoteBinding = FragmentEditNoteBinding.inflate(inflater, container, false)
+        try {
+            binding.etNoteContent.setOnFocusChangeListener { v, hasFocus ->
+                val layoutParams=binding.editNoteFab.layoutParams as ViewGroup.MarginLayoutParams
+                if (hasFocus){
+                    binding.styleBar.visibility=View.VISIBLE
+                    binding.etNoteContent.setStylesBar(binding.styleBar)
+                    layoutParams.bottomMargin=resources.getDimensionPixelSize(R.dimen.margin_64dp)
+                    binding.editNoteFab.layoutParams=layoutParams
+                }else{
+                    binding.styleBar.visibility=View.GONE
+                    layoutParams.bottomMargin=resources.getDimensionPixelSize(R.dimen.margin_20dp)
+                    binding.editNoteFab.layoutParams=layoutParams
+                }
+            }
+        }catch (e:Throwable){
+            Log.d("Tag", e.stackTraceToString())
+        }
         return binding.root
     }
 
@@ -50,10 +69,12 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         currentNote = args.note!!
 
         binding.editNoteTitle.setText(currentNote.noteTitle)
-        binding.editNoteDesc.setText(currentNote.noteDesc)
+        //binding.editNoteDesc.setText(currentNote.noteDesc)
+        binding.etNoteContent.setText(currentNote.noteDesc)
         binding.editNoteFab.setOnClickListener {
             val noteTitle = binding.editNoteTitle.text.toString().trim()
-            val noteDesc = binding.editNoteDesc.text.toString().trim()
+            //val noteDesc = binding.editNoteDesc.text.toString().trim()
+            val noteDesc=binding.etNoteContent.getMD().trim()
 
             if (noteTitle.isNotEmpty()) {
                 val note = Note(currentNote.id, noteTitle, noteDesc)

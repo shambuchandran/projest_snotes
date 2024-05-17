@@ -42,15 +42,40 @@
             android:padding="12dp"
             android:textSize="18sp"
             android:fontFamily="@font/poppins"
+            android:visibility="gone"
             android:background="@drawable/borderstyle"
             android:layout_below="@id/editNoteTitle"
             android:layout_marginTop="12dp" />
+        <com.yahiaangelo.markdownedittext.MarkdownEditText
+        android:id="@+id/etNoteContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/borderstyle"
+        android:layout_below="@id/editNoteDesc"
+        android:gravity="top"
+        android:layout_marginTop="12dp"
+        android:hint="Enter the description"
+        android:importantForAutofill="no"
+        android:inputType="none"
+        android:fontFamily="@font/poppins"
+        android:padding="12dp"
+        android:textSize="18sp">
+    </com.yahiaangelo.markdownedittext.MarkdownEditText>
+        <com.yahiaangelo.markdownedittext.MarkdownStylesBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/style_bar"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:elevation="4dp"
+            android:visibility="gone"
+            android:padding="12dp"/>
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/editNoteFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/margin_20dp"
             android:clickable="true"
             android:backgroundTint="@color/theme_color"
             android:tintMode="@color/white"

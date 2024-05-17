@@ -74,4 +74,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
     // Annotation processor
     ksp("androidx.lifecycle:lifecycle-compiler:$lifecycleVersion")
+    val latestVersion ="1.1.3"
+    implementation ("io.github.yahiaangelo.markdownedittext:markdownedittext:$latestVersion")
 }
