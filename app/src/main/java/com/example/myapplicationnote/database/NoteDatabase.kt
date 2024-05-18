@@ -23,6 +23,14 @@ abstract class NoteDatabase : RoomDatabase() {
         private fun createDatabase(context: Context) =
             Room.databaseBuilder(context.applicationContext, NoteDatabase::class.java, "note_db")
                 .build()
+
+        fun deleteDatabase(context: Context) {
+            //closeDatabase(context)
+            val databaseFile = context.getDatabasePath("note_db")
+            if (databaseFile.exists()) {
+                databaseFile.delete()
+            }
+        }
     }
 
 }

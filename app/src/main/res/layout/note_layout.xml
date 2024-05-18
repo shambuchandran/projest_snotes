@@ -34,6 +34,13 @@
                 android:textSize="14sp"
                 android:fontFamily="@font/poppins"
                 android:textColor="@color/theme_color"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/showTime"
+                android:hint="Time"
+                android:layout_marginTop="12dp"
+                android:textSize="12sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

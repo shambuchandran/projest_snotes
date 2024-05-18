@@ -23,6 +23,9 @@ import com.example.myapplicationnote.databinding.FragmentEditNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
@@ -75,9 +78,10 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             val noteTitle = binding.editNoteTitle.text.toString().trim()
             //val noteDesc = binding.editNoteDesc.text.toString().trim()
             val noteDesc=binding.etNoteContent.getMD().trim()
+            val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
 
             if (noteTitle.isNotEmpty()) {
-                val note = Note(currentNote.id, noteTitle, noteDesc)
+                val note = Note(currentNote.id, noteTitle, noteDesc,date)
                 notesViewModel.updateNote(note)
                 view.findNavController().popBackStack(R.id.homeFragment, false)
             } else {

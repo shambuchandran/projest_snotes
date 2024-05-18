@@ -13,13 +13,18 @@ import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
+import com.example.myapplicationnote.database.NoteDatabase
 import com.example.myapplicationnote.databinding.FragmentAddNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
@@ -28,6 +33,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
     private val binding get() = addNoteBinding!!
     private lateinit var notesViewModel: NoteViewModel
     private lateinit var addNoteView: View
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,8 +68,9 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         val noteTitle = binding.addNoteTitle.text.toString().trim()
         //val noteDesc = binding.addNoteDesc.text.toString().trim()
         val noteDesc=binding.etNoteContent.getMD().trim()
+        val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
         if (noteTitle.isNotEmpty()) {
-            val note = Note(0, noteTitle, noteDesc)
+            val note = Note(0, noteTitle, noteDesc, date )
             notesViewModel.addNote(note)
             Toast.makeText(addNoteView.context, "Note Saved", Toast.LENGTH_SHORT).show()
             view.findNavController().popBackStack(R.id.homeFragment, false)
