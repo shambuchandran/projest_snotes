@@ -14,6 +14,14 @@
         <item name="rippleColor">@color/audioGreyDarkDisabled</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="TextLayoutStyle" parent="ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox">
+        <item name="android:layout_marginHorizontal">20dp</item>
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="boxCornerRadiusBottomStart">24dp</item>
+        <item name="boxCornerRadiusBottomEnd">24dp</item>
+        <item name="boxCornerRadiusTopEnd">24dp</item>
+        <item name="boxCornerRadiusTopStart">24dp</item>
+    </style>
 
     <style name="Theme.MyApplicationnote" parent="Base.Theme.MyApplicationnote" />
 </resources>

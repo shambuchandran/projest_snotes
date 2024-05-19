@@ -20,6 +20,24 @@
         android:id="@+id/addNoteFragment"
         android:name="com.example.myapplicationnote.fragments.AddNoteFragment"
         android:label="AddNoteFragment" >
+        <argument
+            android:name="filePath"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true"
+            />
+        <argument
+            android:name="fileName"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true"
+            />
+        <argument
+            android:name="audioDuration"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true"
+            />
         <action
             android:id="@+id/action_addNoteFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -40,7 +58,20 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_editNoteFragment_to_audioRecordFragment"
-            app:destination="@id/audioRecordFragment" />
+            app:destination="@id/audioRecordFragment" >
+            <argument
+                android:name="filePath"
+                app:argType="string"
+                />
+            <argument
+                android:name="fileName"
+                app:argType="string"
+                />
+            <argument
+                android:name="audioDuration"
+                app:argType="string"
+                />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/audioRecordFragment"
@@ -49,7 +80,20 @@
         tools:layout="@layout/fragment_audio_record" >
         <action
             android:id="@+id/action_audioRecordFragment_to_addNoteFragment"
-            app:destination="@id/addNoteFragment" />
+            app:destination="@id/addNoteFragment" >
+            <argument
+                android:name="filePath"
+                app:argType="string"
+                />
+            <argument
+                android:name="fileName"
+                app:argType="string"
+                />
+            <argument
+                android:name="audioDuration"
+                app:argType="string"
+               />
+        </action>
         <action
             android:id="@+id/action_audioRecordFragment_to_editNoteFragment"
             app:destination="@id/editNoteFragment" />

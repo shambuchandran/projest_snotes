@@ -15,8 +15,12 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
+import com.example.myapplicationnote.adapter.AudioAdapter
 import com.example.myapplicationnote.databinding.FragmentAddNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
@@ -24,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+data class AudioFile(val filePath: String, val fileName: String, val duration: String)
 
 class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
 
@@ -31,7 +36,11 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
     private val binding get() = addNoteBinding!!
     private lateinit var notesViewModel: NoteViewModel
     private lateinit var addNoteView: View
-    private lateinit var addAudioBtn:ImageButton
+    private lateinit var addAudioBtn: ImageButton
+    private val audioFiles = mutableListOf<AudioFile>()
+    private lateinit var audioAdapter: AudioAdapter
+    private lateinit var audioRecyclerView: RecyclerView
+    private val args: AddNoteFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -42,14 +51,14 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         addNoteBinding = FragmentAddNoteBinding.inflate(inflater, container, false)
         try {
             binding.etNoteContent.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus){
-                        binding.styleBar.visibility=View.VISIBLE
-                        binding.etNoteContent.setStylesBar(binding.styleBar)
-                }else{
-                    binding.styleBar.visibility=View.GONE
+                if (hasFocus) {
+                    binding.styleBar.visibility = View.VISIBLE
+                    binding.etNoteContent.setStylesBar(binding.styleBar)
+                } else {
+                    binding.styleBar.visibility = View.GONE
                 }
             }
-        }catch (e:Throwable){
+        } catch (e: Throwable) {
             Log.d("Tag", e.stackTraceToString())
         }
         return binding.root
@@ -57,23 +66,45 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        audioAdapter = AudioAdapter(audioFiles)
+        audioRecyclerView=binding.audioRecyclerView
+        audioRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        audioRecyclerView.adapter = audioAdapter
+
+        val filePath = args.filePath
+        val fileName = args.fileName
+        val audioDuration = args.audioDuration
+        if (filePath != null && fileName != null && audioDuration != null) {
+            val audioFile = AudioFile(filePath, fileName, audioDuration)
+            addAudioFileToList(audioFile)
+        }
+
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         notesViewModel = (activity as MainActivity).noteViewModel
+
         addNoteView = view
-        addAudioBtn=binding.addAudioBtn
+        addAudioBtn = binding.addAudioBtn
         addAudioBtn.setOnClickListener {
             view.findNavController().navigate(R.id.action_addNoteFragment_to_audioRecordFragment)
         }
     }
 
+    private fun addAudioFileToList(audioFile: AudioFile) {
+        audioFiles.add(audioFile)
+        audioAdapter.notifyItemInserted(audioFiles.size - 1)
+    }
+
     private fun saveNote(view: View) {
         val noteTitle = binding.addNoteTitle.text.toString().trim()
         //val noteDesc = binding.addNoteDesc.text.toString().trim()
-        val noteDesc=binding.etNoteContent.getMD().trim()
-        val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
+        val noteDesc = binding.etNoteContent.getMD().trim()
+        val date =
+            SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
         if (noteTitle.isNotEmpty()) {
-            val note = Note(0, noteTitle, noteDesc, date )
+            val note = Note(0, noteTitle, noteDesc, date)
             notesViewModel.addNote(note)
             Toast.makeText(addNoteView.context, "Note Saved", Toast.LENGTH_SHORT).show()
             view.findNavController().popBackStack(R.id.homeFragment, false)
@@ -94,12 +125,13 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
                 saveNote(addNoteView)
                 true
             }
+
             else -> false
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        addNoteBinding =null
+        addNoteBinding = null
     }
 }

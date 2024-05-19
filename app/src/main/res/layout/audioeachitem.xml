@@ -18,15 +18,6 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:orientation="horizontal">
-            <ImageView
-                android:id="@+id/rcAudioView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:padding="4dp"
-                android:scaleType="center"
-                android:src="@drawable/baseline_audio_file_24" />
-
             <TextView
                 android:id="@+id/tvAudioFilename"
                 android:layout_width="wrap_content"
