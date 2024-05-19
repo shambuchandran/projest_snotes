@@ -2,26 +2,24 @@ package com.example.myapplicationnote.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
-import com.example.myapplicationnote.database.NoteDatabase
 import com.example.myapplicationnote.databinding.FragmentAddNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -33,6 +31,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
     private val binding get() = addNoteBinding!!
     private lateinit var notesViewModel: NoteViewModel
     private lateinit var addNoteView: View
+    private lateinit var addAudioBtn:ImageButton
 
 
     override fun onCreateView(
@@ -62,6 +61,10 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         notesViewModel = (activity as MainActivity).noteViewModel
         addNoteView = view
+        addAudioBtn=binding.addAudioBtn
+        addAudioBtn.setOnClickListener {
+            view.findNavController().navigate(R.id.action_addNoteFragment_to_audioRecordFragment)
+        }
     }
 
     private fun saveNote(view: View) {

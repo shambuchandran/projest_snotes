@@ -5,4 +5,10 @@
     <color name="bg_green">#CAFFDC</color>
     <color name="text_color">#0a190f</color>
     <color name="theme_color">#28663d</color>
+    <color name="grey">#646464</color>
+    <color name="orange">#F4511E</color>
+    <color name="audioGrey">#ECECEC</color>
+    <color name="audioGreyDark">#656565</color>
+    <color name="audioGreyDarkDisabled">#8F8F8F</color>
+
 </resources>
