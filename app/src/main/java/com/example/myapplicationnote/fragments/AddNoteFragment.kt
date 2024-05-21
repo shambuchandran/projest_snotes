@@ -1,6 +1,7 @@
 package com.example.myapplicationnote.fragments
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,20 +16,25 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Entity
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.adapter.AudioAdapter
 import com.example.myapplicationnote.databinding.FragmentAddNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
+import com.google.gson.Gson
+import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-data class AudioFile(val filePath: String, val fileName: String, val duration: String)
+@Parcelize
+data class AudioFile(val filePath: String, val fileName: String, val duration: String):Parcelable
 
 class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
 
@@ -73,13 +79,12 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         audioRecyclerView.adapter = audioAdapter
 
-        val filePath = args.filePath
-        val fileName = args.fileName
-        val audioDuration = args.audioDuration
-        if (filePath != null && fileName != null && audioDuration != null) {
-            val audioFile = AudioFile(filePath, fileName, audioDuration)
-            addAudioFileToList(audioFile)
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
+            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
+            addAudioFileToList(audioFileObj)
+            Log.d("path","path received ")
         }
+
 
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -104,7 +109,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         val date =
             SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
         if (noteTitle.isNotEmpty()) {
-            val note = Note(0, noteTitle, noteDesc, date)
+            val note = Note(0, noteTitle, noteDesc, date,audioFiles)
             notesViewModel.addNote(note)
             Toast.makeText(addNoteView.context, "Note Saved", Toast.LENGTH_SHORT).show()
             view.findNavController().popBackStack(R.id.homeFragment, false)

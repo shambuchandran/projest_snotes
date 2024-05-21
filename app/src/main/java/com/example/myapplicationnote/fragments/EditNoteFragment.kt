@@ -81,7 +81,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
 
             if (noteTitle.isNotEmpty()) {
-                val note = Note(currentNote.id, noteTitle, noteDesc,date)
+                val note = Note(currentNote.id, noteTitle, noteDesc,date, mutableListOf() )
                 notesViewModel.updateNote(note)
                 view.findNavController().popBackStack(R.id.homeFragment, false)
             } else {

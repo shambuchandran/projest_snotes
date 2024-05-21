@@ -30,6 +30,7 @@ import com.example.myapplicationnote.Timer
 import com.example.myapplicationnote.databinding.FragmentAudioRecordBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
 import java.io.File
 import java.io.IOException
 import java.util.Date
@@ -165,12 +166,12 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
         }
         fileName = "$newFilename.mp3"
         filePath = "$dirPath$filename.mp3"
-        val action = AudioRecordFragmentDirections.actionAudioRecordFragmentToAddNoteFragment(
-            filePath,
-            fileName,
-            audioDuration
-        )
-        findNavController().navigate(action)
+
+//        findNavController().previousBackStackEntry?.savedStateHandle?.set("PATH", filePath)
+//        findNavController().previousBackStackEntry?.savedStateHandle?.set("NAME", fileName)
+//        findNavController().previousBackStackEntry?.savedStateHandle?.set("DURATION", audioDuration)
+        findNavController().previousBackStackEntry?.savedStateHandle?.set("AUDIOFILE",Gson().toJson( AudioFile(filePath,fileName,audioDuration)))
+        findNavController().popBackStack()
 
     }
 
