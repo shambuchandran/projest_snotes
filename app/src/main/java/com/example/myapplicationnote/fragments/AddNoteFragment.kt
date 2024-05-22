@@ -78,14 +78,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         audioRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         audioRecyclerView.adapter = audioAdapter
-
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
-            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
-            addAudioFileToList(audioFileObj)
-            Log.d("path","path received ")
-        }
-
-
+        addAudioLiveDataObserver()
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         notesViewModel = (activity as MainActivity).noteViewModel
@@ -94,12 +87,22 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         addAudioBtn = binding.addAudioBtn
         addAudioBtn.setOnClickListener {
             view.findNavController().navigate(R.id.action_addNoteFragment_to_audioRecordFragment)
+            addAudioLiveDataObserver()
+
         }
     }
 
     private fun addAudioFileToList(audioFile: AudioFile) {
         audioFiles.add(audioFile)
         audioAdapter.notifyItemInserted(audioFiles.size - 1)
+    }
+    private fun addAudioLiveDataObserver(){
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
+            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
+            addAudioFileToList(audioFileObj)
+            Log.d("path","path received ")
+            findNavController().currentBackStackEntry?.savedStateHandle?.remove<String>("AUDIIOFILE")
+        }
     }
 
     private fun saveNote(view: View) {

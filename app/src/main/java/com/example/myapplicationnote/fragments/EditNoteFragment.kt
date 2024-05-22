@@ -24,10 +24,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.adapter.AudioAdapter
+import com.example.myapplicationnote.audioFileSharedFlow
 import com.example.myapplicationnote.databinding.FragmentEditNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -44,6 +49,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     private lateinit var audioEditAdapter: AudioAdapter
     private lateinit var audioEditRecyclerView: RecyclerView
     private lateinit var audioEditBtn:ImageButton
+    private val editAudioFiles = mutableListOf<AudioFile>()
 
     private val args: EditNoteFragmentArgs by navArgs()
 
@@ -93,11 +99,12 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         audioEditRecyclerView.adapter = audioEditAdapter
 
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
-            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
-            addAudioFileToList(audioFileObj)
-            Log.d("path","path received ")
-        }
+//        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
+//            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
+//            addAudioFileToList(audioFileObj)
+//            Log.d("path","path received ")
+//        }
+        subscribeToAudiFileSharedFlow()
 
 
         binding.editNoteFab.setOnClickListener {
@@ -116,6 +123,18 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             }
         }
     }
+    private fun subscribeToAudiFileSharedFlow(){
+        var job : Job?= null
+        job =CoroutineScope(Dispatchers.Main).launch {
+            audioFileSharedFlow.collect {
+                currentNote.audioFiles.add(it)
+                audioEditAdapter.notifyDataSetChanged()
+                Log.d("Shared flow", "AudioFile $it")
+                job?.cancel()
+            }
+        }
+    }
+
     private fun addAudioFileToList(audioFile: AudioFile) {
         currentNote.audioFiles.add(audioFile)
         audioEditAdapter.notifyItemInserted(currentNote.audioFiles.size - 1)

@@ -22,15 +22,21 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
 import androidx.navigation.fragment.findNavController
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.Timer
+import com.example.myapplicationnote.audioFileSharedFlow
 import com.example.myapplicationnote.databinding.FragmentAudioRecordBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.Date
@@ -139,8 +145,16 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
             Toast.makeText(requireContext(), "Record deleted", Toast.LENGTH_SHORT).show()
         }
         deleteBtn.isClickable = false
-
-
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isRecording) {
+                        stopRecording()
+                    }
+                    findNavController().popBackStack()
+                }
+            }
+        )
     }
 
     private fun hideKeyboard(view: View) {
@@ -170,10 +184,21 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
 //        findNavController().previousBackStackEntry?.savedStateHandle?.set("PATH", filePath)
 //        findNavController().previousBackStackEntry?.savedStateHandle?.set("NAME", fileName)
 //        findNavController().previousBackStackEntry?.savedStateHandle?.set("DURATION", audioDuration)
-        findNavController().previousBackStackEntry?.savedStateHandle?.set("AUDIOFILE",Gson().toJson( AudioFile(filePath,fileName,audioDuration)))
+        //findNavController().previousBackStackEntry?.savedStateHandle?.set("AUDIOFILE",Gson().toJson( AudioFile(filePath,fileName,audioDuration)))
+
+        emitAudioFileInSharedFlow(AudioFile(filePath, fileName, audioDuration))
         findNavController().popBackStack()
 
     }
+
+    private fun emitAudioFileInSharedFlow(data: AudioFile) {
+        val job: Job? = null
+        CoroutineScope(Dispatchers.Main).launch {
+            audioFileSharedFlow.emit(data)
+            job?.cancel()
+        }
+    }
+
 
     private fun pauseRecording() {
         recorder.pause()
