@@ -192,8 +192,8 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
     }
 
     private fun emitAudioFileInSharedFlow(data: AudioFile) {
-        val job: Job? = null
-        CoroutineScope(Dispatchers.Main).launch {
+        var job: Job? = null
+        job=CoroutineScope(Dispatchers.Main).launch {
             audioFileSharedFlow.emit(data)
             job?.cancel()
         }

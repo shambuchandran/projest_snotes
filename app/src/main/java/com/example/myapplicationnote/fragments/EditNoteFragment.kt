@@ -49,7 +49,6 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     private lateinit var audioEditAdapter: AudioAdapter
     private lateinit var audioEditRecyclerView: RecyclerView
     private lateinit var audioEditBtn:ImageButton
-    private val editAudioFiles = mutableListOf<AudioFile>()
 
     private val args: EditNoteFragmentArgs by navArgs()
 
@@ -87,6 +86,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         currentNote = args.note!!
         audioEditBtn = binding.addEditAudioBtn
         audioEditBtn.setOnClickListener {
+            subscribeToAudiFileSharedFlow()
             view.findNavController().navigate(R.id.action_editNoteFragment_to_audioRecordFragment)
         }
 
@@ -104,7 +104,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
 //            addAudioFileToList(audioFileObj)
 //            Log.d("path","path received ")
 //        }
-        subscribeToAudiFileSharedFlow()
+        //subscribeToAudiFileSharedFlow()
 
 
         binding.editNoteFab.setOnClickListener {
@@ -127,8 +127,8 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         var job : Job?= null
         job =CoroutineScope(Dispatchers.Main).launch {
             audioFileSharedFlow.collect {
-                currentNote.audioFiles.add(it)
-                audioEditAdapter.notifyDataSetChanged()
+                addAudioFileToList(it)
+                audioEditAdapter.notifyItemInserted(currentNote.audioFiles.size -1)
                 Log.d("Shared flow", "AudioFile $it")
                 job?.cancel()
             }
@@ -137,7 +137,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
 
     private fun addAudioFileToList(audioFile: AudioFile) {
         currentNote.audioFiles.add(audioFile)
-        audioEditAdapter.notifyItemInserted(currentNote.audioFiles.size - 1)
+        audioEditAdapter.notifyDataSetChanged()
     }
     private fun deleteNote(){
         AlertDialog.Builder(activity).apply {
@@ -169,6 +169,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     override fun onDestroy() {
         super.onDestroy()
         editNoteBinding =null
+
     }
 
 }

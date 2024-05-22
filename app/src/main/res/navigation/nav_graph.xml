@@ -48,27 +48,17 @@
             android:id="@+id/action_addNoteFragment_to_audioPlayerFragment"
             app:destination="@id/audioPlayerFragment" >
             <argument
-                android:name="note"
-                app:argType="com.example.myapplicationnote.model.Note"
-                android:defaultValue="@null"
-                app:nullable="true" />
-            <argument
                 android:name="filePath"
                 app:argType="string"
-                android:defaultValue="@null"
-                app:nullable="true"
                 />
             <argument
                 android:name="fileName"
                 app:argType="string"
-                android:defaultValue="@null"
-                app:nullable="true"
+
                 />
             <argument
                 android:name="audioDuration"
                 app:argType="string"
-                android:defaultValue="@null"
-                app:nullable="true"
                 />
         </action>
     </fragment>

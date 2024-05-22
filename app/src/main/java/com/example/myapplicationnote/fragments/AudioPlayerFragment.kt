@@ -45,6 +45,9 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
     private lateinit var tvTrackProgress: TextView
     private lateinit var tvTrackDuration: TextView
     private val binding get() = audioPlayerBinding!!
+    private val args: AudioPlayerFragmentArgs by navArgs()
+
+
 
 
 
@@ -62,74 +65,76 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val fileName =
-//        val filePath =
-//        tvFilename=binding.tvAudioFilename
-//        tvTrackDuration=binding.tvTrackDuration
-//        tvTrackProgress=binding.tvTrackProgress
-//        btnback=binding.btnBack
-//        btnforward=binding.btnForward
-//        btnPlay=binding.btnPlay
-//        speed=binding.chip
-//        seekBar=binding.seekbar
-//
-//       // tvFilename.text=fileName
-//        mediaPlayer= MediaPlayer()
-//        mediaPlayer.apply {
-//            try {
-//               // setDataSource(filePath)
-//                prepare()
-//            } catch (e: IOException) {
-//                e.printStackTrace()
-//                Toast.makeText(requireContext(), "Error: Unable to play audio", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        }
-//        tvTrackDuration.text=dateFormat(mediaPlayer.duration)
-//        handler= Handler(Looper.getMainLooper())
-//        runnable = Runnable {
-//            seekBar.progress=mediaPlayer.currentPosition
-//            tvTrackProgress.text=dateFormat(mediaPlayer.currentPosition)
-//            handler.postDelayed(runnable,delay)
-//        }
-//        btnPlay.setOnClickListener{
-//            playPausePlayer()
-//        }
-//        seekBar.max =mediaPlayer.duration
-//        mediaPlayer.setOnCompletionListener {
-//            btnPlay.background=ResourcesCompat.getDrawable(resources,R.drawable.round_play_arrow_24,
-//                requireContext().theme
-//            )
-//            seekBar.progress=mediaPlayer.duration
-//            handler.removeCallbacks(runnable)
-//        }
-//        btnforward.setOnClickListener {
-//            mediaPlayer.seekTo(mediaPlayer.currentPosition + jumpvalue)
-//            seekBar.progress += jumpvalue
-//        }
-//        btnback.setOnClickListener {
-//            mediaPlayer.seekTo(mediaPlayer.currentPosition - jumpvalue)
-//            seekBar.progress -= jumpvalue
-//        }
-//        speed.setOnClickListener {
-//            if (playBackSpeed !=2.0f){
-//                playBackSpeed+=0.5f
-//            }else{
-//                playBackSpeed=0.5f
-//            }
-//            mediaPlayer.playbackParams= PlaybackParams().setSpeed(playBackSpeed)
-//            speed.text="x $playBackSpeed"
-//        }
-//        seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
-//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                if (fromUser){
-//                    mediaPlayer.seekTo(progress)
-//                }
-//            }
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//        })
-//
+        val fileName = arguments?.getString("fileName")
+        val filePath = arguments?.getString("filePath")
+        tvFilename=binding.tvAudioFilename
+        tvTrackDuration=binding.tvTrackDuration
+        tvTrackProgress=binding.tvTrackProgress
+        btnback=binding.btnBack
+        btnforward=binding.btnForward
+        btnPlay=binding.btnPlay
+        speed=binding.chip
+        seekBar=binding.seekbar
+
+        tvFilename.text=fileName
+        mediaPlayer= MediaPlayer()
+        mediaPlayer.apply {
+            try {
+                setDataSource(filePath)
+                prepare()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Error: Unable to play audio", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+        tvTrackDuration.text=dateFormat(mediaPlayer.duration)
+        handler= Handler(Looper.getMainLooper())
+        runnable = Runnable {
+            if (context != null) {
+                seekBar.progress = mediaPlayer.currentPosition
+                tvTrackProgress.text = dateFormat(mediaPlayer.currentPosition)
+            }
+            handler.postDelayed(runnable,delay)
+        }
+        btnPlay.setOnClickListener{
+            playPausePlayer()
+        }
+        seekBar.max =mediaPlayer.duration
+        mediaPlayer.setOnCompletionListener {
+            btnPlay.background=ResourcesCompat.getDrawable(resources,R.drawable.round_play_arrow_24,
+                requireContext().theme
+            )
+            seekBar.progress=mediaPlayer.duration
+            handler.removeCallbacks(runnable)
+        }
+        btnforward.setOnClickListener {
+            mediaPlayer.seekTo(mediaPlayer.currentPosition + jumpvalue)
+            seekBar.progress += jumpvalue
+        }
+        btnback.setOnClickListener {
+            mediaPlayer.seekTo(mediaPlayer.currentPosition - jumpvalue)
+            seekBar.progress -= jumpvalue
+        }
+        speed.setOnClickListener {
+            if (playBackSpeed !=2.0f){
+                playBackSpeed+=0.5f
+            }else{
+                playBackSpeed=0.5f
+            }
+            mediaPlayer.playbackParams= PlaybackParams().setSpeed(playBackSpeed)
+            speed.text="x $playBackSpeed"
+        }
+        seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser){
+                    mediaPlayer.seekTo(progress)
+                }
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
 
 
     }
@@ -158,6 +163,8 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
     override fun onDestroyView() {
         super.onDestroyView()
         audioPlayerBinding = null
+        mediaPlayer.release()
+        handler.removeCallbacks(runnable)
     }
 
 

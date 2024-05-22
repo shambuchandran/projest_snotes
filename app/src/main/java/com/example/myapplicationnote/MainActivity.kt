@@ -7,10 +7,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplicationnote.database.NoteDatabase
+import com.example.myapplicationnote.fragments.AudioFile
 import com.example.myapplicationnote.repository.NoteRepository
 import com.example.myapplicationnote.viewmodel.NoteViewModel
 import com.example.myapplicationnote.viewmodel.NoteViewModelFactory
+import kotlinx.coroutines.flow.MutableSharedFlow
 
+val audioFileSharedFlow = MutableSharedFlow<AudioFile>()
 class MainActivity : AppCompatActivity() {
     public lateinit var noteViewModel: NoteViewModel
     override fun onCreate(savedInstanceState: Bundle?) {

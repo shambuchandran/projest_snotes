@@ -24,10 +24,15 @@ import androidx.room.Entity
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.adapter.AudioAdapter
+import com.example.myapplicationnote.audioFileSharedFlow
 import com.example.myapplicationnote.databinding.FragmentAddNoteBinding
 import com.example.myapplicationnote.model.Note
 import com.example.myapplicationnote.viewmodel.NoteViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -78,7 +83,8 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         audioRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         audioRecyclerView.adapter = audioAdapter
-        addAudioLiveDataObserver()
+
+
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         notesViewModel = (activity as MainActivity).noteViewModel
@@ -87,23 +93,35 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         addAudioBtn = binding.addAudioBtn
         addAudioBtn.setOnClickListener {
             view.findNavController().navigate(R.id.action_addNoteFragment_to_audioRecordFragment)
-            addAudioLiveDataObserver()
-
+            //addAudioLiveDataObserver()
+            subscribeToAudiFileSharedFlow()
         }
     }
 
     private fun addAudioFileToList(audioFile: AudioFile) {
         audioFiles.add(audioFile)
-        audioAdapter.notifyItemInserted(audioFiles.size - 1)
+        audioAdapter.notifyItemInserted(audioFiles.size -1)
+//        audioAdapter.notifyItemInserted(audioFiles.size - 1)
     }
-    private fun addAudioLiveDataObserver(){
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
-            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
-            addAudioFileToList(audioFileObj)
-            Log.d("path","path received ")
-            findNavController().currentBackStackEntry?.savedStateHandle?.remove<String>("AUDIIOFILE")
+//    private fun addAudioLiveDataObserver(){
+//        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
+//            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
+//            addAudioFileToList(audioFileObj)
+//            Log.d("path","path received ")
+//            findNavController().currentBackStackEntry?.savedStateHandle?.remove<String>("AUDIIOFILE")
+//        }
+//    }
+private fun subscribeToAudiFileSharedFlow(){
+    var job : Job?= null
+    job= CoroutineScope(Dispatchers.Main).launch {
+        audioFileSharedFlow.collect {
+            addAudioFileToList(it)
+            Log.d("Shared flow", "AudioFile $it")
+            job?.cancel()
         }
     }
+}
+
 
     private fun saveNote(view: View) {
         val noteTitle = binding.addNoteTitle.text.toString().trim()
