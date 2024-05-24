@@ -15,10 +15,17 @@
             android:background="@drawable/borderstyle"
             android:padding="16dp">
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/showTime"
+                android:hint="Time"
+                android:textSize="12sp"/>
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:id="@+id/noteTitle"
                 android:layout_weight="200"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/theme_color"
                 android:fontFamily="@font/poppins"
                 android:text="Note Title"
@@ -34,13 +41,34 @@
                 android:textSize="14sp"
                 android:fontFamily="@font/poppins"
                 android:textColor="@color/theme_color"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/showTime"
-                android:hint="Time"
-                android:layout_marginTop="12dp"
-                android:textSize="12sp"/>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/audioPlayerBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5"
+                    android:padding="4dp"
+                    android:visibility="visible"/>
+
+                <ImageButton
+                    android:id="@+id/editNoteBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/theme_color"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:srcCompat="@drawable/round_edit_note_24" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

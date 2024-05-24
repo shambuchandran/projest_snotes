@@ -9,6 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.example.myapplicationnote.fragments.HomeFragment"
         android:label="HomeFragment" >
+        <argument
+            android:name="note"
+            app:argType="com.example.myapplicationnote.model.Note"
+            android:defaultValue="@null"
+            app:nullable="true" />
         <action
             android:id="@+id/action_homeFragment_to_addNoteFragment"
             app:destination="@id/addNoteFragment" />

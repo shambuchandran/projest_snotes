@@ -12,8 +12,6 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplicationnote.R
-import com.example.myapplicationnote.audioFileSharedFlow
-import com.example.myapplicationnote.fragments.AddNoteFragment
 import com.example.myapplicationnote.fragments.AudioFile
 import java.io.File
 
@@ -30,7 +28,7 @@ class AudioAdapter(private val audioFiles: MutableList<AudioFile>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudioViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.audioeachitem, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.audio_eachitem_layout, parent, false)
         return AudioViewHolder(view)
     }
 
