@@ -116,7 +116,7 @@ private fun subscribeToAudiFileSharedFlow(){
     job= CoroutineScope(Dispatchers.Main).launch {
         audioFileSharedFlow.collect {
             addAudioFileToList(it)
-            Log.d("Shared flow", "AudioFile $it")
+            Log.d("Shared flow collect", "$it")
             job?.cancel()
         }
     }

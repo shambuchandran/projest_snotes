@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -179,7 +180,7 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
             Toast.makeText(requireContext(), "Recording saved", Toast.LENGTH_SHORT).show()
         }
         fileName = "$newFilename.mp3"
-        filePath = "$dirPath$filename.mp3"
+        filePath = "$dirPath$newFilename.mp3"
 
 //        findNavController().previousBackStackEntry?.savedStateHandle?.set("PATH", filePath)
 //        findNavController().previousBackStackEntry?.savedStateHandle?.set("NAME", fileName)
@@ -195,6 +196,7 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
         var job: Job? = null
         job=CoroutineScope(Dispatchers.Main).launch {
             audioFileSharedFlow.emit(data)
+            Log.d("audioFile In emit fun in recorder", "$data")
             job?.cancel()
         }
     }
@@ -250,7 +252,7 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
         }
         recorder = MediaRecorder()
         dirPath = "${requireContext().externalCacheDir?.absolutePath}/"
-        val simpleDateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
+        val simpleDateFormat = SimpleDateFormat("dd.MM.yy.mm.ss", Locale.getDefault())
         val date = simpleDateFormat.format(Date())
         filename = "Rec_$date"
         recorder.apply {

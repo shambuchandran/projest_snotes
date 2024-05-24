@@ -128,7 +128,8 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         job =CoroutineScope(Dispatchers.Main).launch {
             audioFileSharedFlow.collect {
                 addAudioFileToList(it)
-                audioEditAdapter.notifyItemInserted(currentNote.audioFiles.size -1)
+                //audioEditAdapter.notifyItemInserted(currentNote.audioFiles.size -1)
+                audioEditAdapter.notifyDataSetChanged()
                 Log.d("Shared flow", "AudioFile $it")
                 job?.cancel()
             }

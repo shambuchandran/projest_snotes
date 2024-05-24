@@ -1,21 +1,24 @@
 package com.example.myapplicationnote.adapter
 
 
-import android.os.Bundle
+import android.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplicationnote.R
-import com.example.myapplicationnote.fragments.AddNoteFragmentDirections
+import com.example.myapplicationnote.audioFileSharedFlow
+import com.example.myapplicationnote.fragments.AddNoteFragment
 import com.example.myapplicationnote.fragments.AudioFile
-import com.example.myapplicationnote.fragments.AudioPlayerFragmentDirections
+import java.io.File
 
 
-class AudioAdapter(private val audioFiles: List<AudioFile>) :
+class AudioAdapter(private val audioFiles: MutableList<AudioFile>) :
     RecyclerView.Adapter<AudioAdapter.AudioViewHolder>() {
 
 
@@ -37,7 +40,10 @@ class AudioAdapter(private val audioFiles: List<AudioFile>) :
 
     override fun onBindViewHolder(holder: AudioViewHolder, position: Int) {
         val audioFile = audioFiles[position]
+        Log.d("audioFile onBind", "$audioFiles")
+        Log.d("audioFile.path onBind", audioFile.filePath)
         holder.fileName.text = audioFile.fileName
+
         holder.audioDuration.text = audioFile.duration
         holder.itemView.setOnClickListener {
 //            audioFiles[position].filePath
@@ -45,17 +51,30 @@ class AudioAdapter(private val audioFiles: List<AudioFile>) :
 //            it.findNavController().navigate(R.id.audioPlayerFragment)
             val args = bundleOf(
                 "filePath" to audioFile.filePath,
-                "fileName" to audioFile.fileName,
-                "audioDuration" to audioFile.duration
+                "fileName" to audioFile.fileName
             )
             it.findNavController().navigate(R.id.audioPlayerFragment,args)
+            Log.d("filepath audioAdapter click", audioFile.filePath)
+            Log.d("filename audioAdapter click", audioFile.fileName)
 
 
         }
-//        holder.itemView.setOnLongClickListener {
-//            println("long click")
-//
-//            return@setOnLongClickListener true
-//        }
+        holder.itemView.setOnLongClickListener {
+            println("long click")
+            if (File(audioFile.filePath).exists()){
+                AlertDialog.Builder(it.context).apply {
+                    setTitle("Delete audio!")
+                    setMessage("Do you want to delete this audio?")
+                    setPositiveButton("Delete"){_,_ ->
+                        File(audioFile.filePath).delete()
+                        audioFiles.removeAt(position)
+                        notifyItemRemoved(position)
+                        Toast.makeText(context, "audio deleted", Toast.LENGTH_SHORT).show()
+                    }
+                    setNegativeButton("Cancel",null)
+                }.create().show()
+            }
+            return@setOnLongClickListener true
+        }
     }
 }
