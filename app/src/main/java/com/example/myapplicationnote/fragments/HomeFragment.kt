@@ -38,8 +38,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SearchView.OnQueryTextLis
     private val binding get() = homeBinding!!
     private lateinit var notesViewModel: NoteViewModel
     private lateinit var noteAdapter: NoteAdapter
-    //private lateinit var currentNote: Note
-    private val args: HomeFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

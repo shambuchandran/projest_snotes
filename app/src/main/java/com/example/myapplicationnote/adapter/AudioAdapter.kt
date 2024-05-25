@@ -64,10 +64,21 @@ class AudioAdapter(private val audioFiles: MutableList<AudioFile>) :
                     setTitle("Delete audio!")
                     setMessage("Do you want to delete this audio?")
                     setPositiveButton("Delete"){_,_ ->
-                        File(audioFile.filePath).delete()
-                        audioFiles.removeAt(position)
-                        notifyItemRemoved(position)
-                        Toast.makeText(context, "audio deleted", Toast.LENGTH_SHORT).show()
+                        if (File(audioFile.filePath).delete()){
+                            val adapterPosition = holder.adapterPosition
+                            if (adapterPosition != RecyclerView.NO_POSITION) {
+                                audioFiles.removeAt(adapterPosition)
+                                notifyItemRemoved(adapterPosition)
+                                notifyItemRangeChanged(adapterPosition, audioFiles.size)
+                                Toast.makeText(it.context, "Audio deleted", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(it.context, "Failed to delete audio", Toast.LENGTH_SHORT).show()
+                        }
+//                        audioFiles.removeAt(holder.adapterPosition)
+//                        notifyItemRemoved(holder.adapterPosition)
+//                        notifyItemRangeChanged(holder.adapterPosition, audioFiles.size)
+//                        Toast.makeText(context, "audio deleted", Toast.LENGTH_SHORT).show()
                     }
                     setNegativeButton("Cancel",null)
                 }.create().show()
