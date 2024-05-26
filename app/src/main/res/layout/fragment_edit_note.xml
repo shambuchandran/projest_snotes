@@ -22,11 +22,44 @@
             android:textStyle="bold"
             android:textColor="@color/theme_color"
             android:textSize="24sp" />
+        <TextView
+            android:id="@+id/editNoteShowAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/theme_color" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:id="@+id/editImageRecycler"
+            android:layout_below="@id/editNoteHeading"
+            android:orientation="horizontal"
+            android:background="@drawable/borderstyle"
+            android:layout_marginTop="16dp">
+            <ImageButton
+                android:id="@+id/editNoteAddImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_gravity="center"
+                android:src="@drawable/round_add_a_photo_24" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/editNoteImageRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:padding="4dp"
+                />
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:id="@+id/audioEditRecycler"
-            android:layout_below="@id/editNoteHeading"
+            android:layout_below="@id/editImageRecycler"
             android:orientation="horizontal"
             android:background="@drawable/borderstyle"
             android:layout_marginTop="16dp">

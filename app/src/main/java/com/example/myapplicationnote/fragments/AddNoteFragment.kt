@@ -1,5 +1,6 @@
 package com.example.myapplicationnote.fragments
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.core.view.MenuHost
@@ -98,6 +100,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         }
     }
 
+
     private fun addAudioFileToList(audioFile: AudioFile) {
         audioFiles.add(audioFile)
         audioAdapter.notifyItemInserted(audioFiles.size -1)
@@ -149,6 +152,10 @@ private fun subscribeToAudiFileSharedFlow(){
         return when (menuItem.itemId) {
             R.id.saveMenu -> {
                 saveNote(addNoteView)
+                true
+            }
+            R.id.setAlarmMenu ->{
+                //set alarm
                 true
             }
 

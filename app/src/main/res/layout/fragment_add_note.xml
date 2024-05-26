@@ -16,7 +16,6 @@
             android:id="@+id/addNoteHeading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins"
             android:text="Add Note"
@@ -25,14 +24,47 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/addNoteShowAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/theme_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:id="@+id/audioRecycler"
+            android:layout_height="80dp"
+            android:id="@+id/imageRecycler"
             android:layout_below="@id/addNoteHeading"
             android:orientation="horizontal"
             android:background="@drawable/borderstyle"
             app:layout_constraintTop_toBottomOf="@id/addNoteHeading"
+            android:layout_marginTop="16dp">
+            <ImageButton
+                android:id="@+id/addNoteAddImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_gravity="center"
+                android:src="@drawable/round_add_a_photo_24" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/addNoteImageRecyclerView"
+                android:layout_marginStart="8dp"
+                android:padding="4dp"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:id="@+id/audioRecycler"
+            android:orientation="horizontal"
+            android:background="@drawable/borderstyle"
+            app:layout_constraintTop_toBottomOf="@id/imageRecycler"
             android:layout_marginTop="16dp">
             <ImageButton
                 android:layout_width="wrap_content"
@@ -58,7 +90,6 @@
             android:hint="Enter the title"
             android:padding="12dp"
             android:textSize="20sp"
-            android:layout_below="@id/audioRecycler"
             android:background="@drawable/borderstyle"
             android:layout_marginTop="16dp"
             android:maxLines="1"

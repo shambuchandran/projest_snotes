@@ -163,6 +163,10 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             R.id.deleteMenu ->{
                 deleteNote()
                 true
+            }
+            R.id.editSetAlarmMenu ->{
+              //set alarm
+                true
             }else -> false
         }
     }
