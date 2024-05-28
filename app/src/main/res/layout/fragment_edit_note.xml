@@ -29,7 +29,9 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="16dp"
+            android:drawableStart="@drawable/round_alarm_24"
             android:visibility="gone"
+            android:gravity="center"
             android:fontFamily="@font/poppins"
             android:textColor="@color/theme_color" />
         <LinearLayout

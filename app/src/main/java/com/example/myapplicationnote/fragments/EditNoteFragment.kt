@@ -1,6 +1,12 @@
 package com.example.myapplicationnote.fragments
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.app.PendingIntent
+import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,7 +16,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -21,6 +30,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplicationnote.AlarmReceiver
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.adapter.AudioAdapter
@@ -49,6 +59,9 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     private lateinit var audioEditAdapter: AudioAdapter
     private lateinit var audioEditRecyclerView: RecyclerView
     private lateinit var audioEditBtn:ImageButton
+    private lateinit var showEditNoteAlarm: TextView
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var alarmManager: AlarmManager
 
     private val args: EditNoteFragmentArgs by navArgs()
 
@@ -84,6 +97,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         notesViewModel = (activity as MainActivity).noteViewModel
         currentNote = args.note!!
+        showEditNoteAlarm=binding.editNoteShowAlarm
         audioEditBtn = binding.addEditAudioBtn
         audioEditBtn.setOnClickListener {
             subscribeToAudiFileSharedFlow()
@@ -93,7 +107,16 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         binding.editNoteTitle.setText(currentNote.noteTitle)
         //binding.editNoteDesc.setText(currentNote.noteDesc)
         binding.etNoteContent.setText(currentNote.noteDesc)
+        showEditNoteAlarm.text = currentNote.alarm
+        if (currentNote.alarm==""){
+            binding.editNoteShowAlarm.visibility=View.GONE
+        }else{
+            binding.editNoteShowAlarm.visibility=View.VISIBLE
+        }
+        Log.d("edit note","${showEditNoteAlarm.text}${currentNote.alarm}")
+
         audioEditAdapter = AudioAdapter(currentNote.audioFiles)
+
         audioEditRecyclerView=binding.audioEditRecyclerView
         audioEditRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -111,11 +134,12 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             val noteTitle = binding.editNoteTitle.text.toString().trim()
             //val noteDesc = binding.editNoteDesc.text.toString().trim()
             val noteDesc=binding.etNoteContent.getMD().trim()
+            val editedAlarm=binding.editNoteShowAlarm.text.toString()
             val audioEditFiles=currentNote.audioFiles
             val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
 
             if (noteTitle.isNotEmpty()) {
-                val note = Note(currentNote.id, noteTitle, noteDesc,date, audioEditFiles )
+                val note = Note(currentNote.id, noteTitle, noteDesc,date, editedAlarm, audioEditFiles )
                 notesViewModel.updateNote(note)
                 view.findNavController().popBackStack(R.id.homeFragment, false)
             } else {
@@ -134,6 +158,56 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
                 job?.cancel()
             }
         }
+    }
+    private fun showDateTimePicker() {
+        val calendar =Calendar.getInstance()
+        val datePickerDialog= DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { view: DatePicker, year:Int, month:Int, dayOfMonth:Int ->
+                calendar.set(Calendar.YEAR,year)
+                calendar.set(Calendar.MONTH,month)
+                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+                val timePickerDialog = TimePickerDialog(
+                    requireContext(),
+                    TimePickerDialog.OnTimeSetListener { view: TimePicker, hourOfDay:Int, minute:Int ->
+                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay)
+                        calendar.set(Calendar.MINUTE,minute)
+                        val dateFormat=SimpleDateFormat("yy-MM-dd hh:mm a",Locale.getDefault())
+                        val formattedDateTime=dateFormat.format(calendar.time)
+                        showEditNoteAlarm=binding.editNoteShowAlarm
+                        showEditNoteAlarm.text="$formattedDateTime"
+                        showEditNoteAlarm.visibility=View.VISIBLE
+                        setReminder(calendar.timeInMillis)
+
+                    },calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    false
+                )
+                timePickerDialog.show()
+            },calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.datePicker.minDate=System.currentTimeMillis()+10000
+        datePickerDialog.show()
+    }
+    private fun setReminder(timeInMillis: Long) {
+        alarmManager=requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val i= Intent(requireContext(), AlarmReceiver::class.java)
+        pendingIntent= PendingIntent.getBroadcast(requireContext(),0,i, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,timeInMillis,
+            AlarmManager.INTERVAL_DAY,pendingIntent)
+        Toast.makeText(context, "Alarm set", Toast.LENGTH_SHORT).show()
+    }
+    private fun cancelAlarm(){
+        alarmManager=requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val i= Intent(requireContext(), AlarmReceiver::class.java)
+        pendingIntent= PendingIntent.getBroadcast(requireContext(),0,i, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.cancel(pendingIntent)
+        showEditNoteAlarm.text=""
+        showEditNoteAlarm.visibility=View.GONE
+        Toast.makeText(context, "Alarm deleted", Toast.LENGTH_SHORT).show()
     }
 
     private fun addAudioFileToList(audioFile: AudioFile) {
@@ -165,7 +239,17 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
                 true
             }
             R.id.editSetAlarmMenu ->{
-              //set alarm
+                AlertDialog.Builder(activity).apply {
+                    setTitle("Set/Cancel Alarm")
+                    setMessage("Choose from options")
+                    setPositiveButton("Set Alarm"){_,_ ->
+                        showDateTimePicker()
+                    }
+                    setNegativeButton("Back",null)
+                    setNeutralButton("Delete Alarm"){_,_ ->
+                        cancelAlarm()
+                    }
+                }.create().show()
                 true
             }else -> false
         }
@@ -176,5 +260,6 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         editNoteBinding =null
 
     }
+
 
 }

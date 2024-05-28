@@ -30,7 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:visibility="gone"
+            android:drawableStart="@drawable/round_alarm_24"
             android:fontFamily="@font/poppins"
+            android:gravity="center"
             android:textColor="@color/theme_color"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -54,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/addNoteImageRecyclerView"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:padding="4dp"
                 />
         </LinearLayout>

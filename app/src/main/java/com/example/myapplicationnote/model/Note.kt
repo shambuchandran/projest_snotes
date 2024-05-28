@@ -17,5 +17,6 @@ data class Note(
     val noteTitle :String,
     val noteDesc :String,
     val date: String,
+    val alarm:String="",
     val audioFiles: MutableList<AudioFile>
 ):Parcelable

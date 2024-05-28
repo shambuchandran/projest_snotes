@@ -26,7 +26,7 @@ class NoteAdapter(private val context: Context) :
     class NoteViewHolder(val itemBinding: NoteLayoutBinding) :
         RecyclerView.ViewHolder(itemBinding.root)
 
-    private lateinit var mediaPlayer : MediaPlayer
+    private lateinit var mediaPlayer: MediaPlayer
     private lateinit var audioPlayerBtn: ImageButton
 
     private val differCallback = object : DiffUtil.ItemCallback<Note>() {
@@ -62,6 +62,11 @@ class NoteAdapter(private val context: Context) :
         holder.itemBinding.noteTitle.text = currentNote.noteTitle
         holder.itemBinding.noteDesc.text = currentNote.noteDesc
         holder.itemBinding.showTime.text = currentNote.date
+        if (currentNote.alarm =="") {
+            holder.itemBinding.addAlarm.visibility = View.GONE
+        } else {
+            holder.itemBinding.addAlarm.visibility = View.VISIBLE
+        }
         if (currentNote.audioFiles.isNotEmpty()) {
             audioPlayerBtn = holder.itemBinding.audioPlayerBtn
             audioPlayerBtn.visibility = View.VISIBLE
@@ -70,7 +75,7 @@ class NoteAdapter(private val context: Context) :
                 R.drawable.round_play_arrow_24,
                 context.theme
             )
-            mediaPlayer= MediaPlayer()
+            mediaPlayer = MediaPlayer()
             mediaPlayer.apply {
                 try {
                     mediaPlayer.reset()
