@@ -1,5 +1,6 @@
 package com.example.myapplicationnote.fragments
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -7,7 +8,10 @@ import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +25,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.marginBottom
@@ -34,6 +39,7 @@ import com.example.myapplicationnote.AlarmReceiver
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
 import com.example.myapplicationnote.adapter.AudioAdapter
+import com.example.myapplicationnote.adapter.ImageAdapter
 import com.example.myapplicationnote.audioFileSharedFlow
 import com.example.myapplicationnote.databinding.FragmentEditNoteBinding
 import com.example.myapplicationnote.model.Note
@@ -44,6 +50,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -62,6 +70,15 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
     private lateinit var showEditNoteAlarm: TextView
     private lateinit var pendingIntent: PendingIntent
     private lateinit var alarmManager: AlarmManager
+    private lateinit var imageEditAdapter: ImageAdapter
+    private lateinit var imageEditRecyclerView: RecyclerView
+    private lateinit var editImageButton: ImageButton
+    private var permissions = arrayOf(android.Manifest.permission.CAMERA)
+    private val PERMISSION_REQUEST_CODE = 3
+    private val REQUEST_IMAGE_CAPTURE = 4
+    private val MY_PERMISSIONS_REQUEST_CAMERA = 5
+    private val REQUEST_PICK_IMAGE = 6
+    private val MAX_IMAGES = 10
 
     private val args: EditNoteFragmentArgs by navArgs()
 
@@ -107,6 +124,8 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         binding.editNoteTitle.setText(currentNote.noteTitle)
         //binding.editNoteDesc.setText(currentNote.noteDesc)
         binding.etNoteContent.setText(currentNote.noteDesc)
+        audioEditAdapter = AudioAdapter(currentNote.audioFiles)
+        imageEditAdapter = ImageAdapter(requireContext(),currentNote.imagePaths)
         showEditNoteAlarm.text = currentNote.alarm
         if (currentNote.alarm==""){
             binding.editNoteShowAlarm.visibility=View.GONE
@@ -115,12 +134,18 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         }
         Log.d("edit note","${showEditNoteAlarm.text}${currentNote.alarm}")
 
-        audioEditAdapter = AudioAdapter(currentNote.audioFiles)
+
 
         audioEditRecyclerView=binding.audioEditRecyclerView
         audioEditRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         audioEditRecyclerView.adapter = audioEditAdapter
+
+        imageEditRecyclerView = binding.editNoteImageRecyclerView
+        imageEditRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        //imageEditAdapter=ImageAdapter(requireContext(),currentNote.imagePaths)
+        imageEditRecyclerView.adapter = imageEditAdapter
 
 //        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("AUDIOFILE")?.observe(viewLifecycleOwner) { audioFile ->
 //            val audioFileObj= Gson().fromJson(audioFile,AudioFile::class.java)
@@ -136,17 +161,128 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
             val noteDesc=binding.etNoteContent.getMD().trim()
             val editedAlarm=binding.editNoteShowAlarm.text.toString()
             val audioEditFiles=currentNote.audioFiles
+            val editImageList=currentNote.imagePaths
             val date = SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
 
             if (noteTitle.isNotEmpty()) {
-                val note = Note(currentNote.id, noteTitle, noteDesc,date, editedAlarm, audioEditFiles )
+                val note = Note(currentNote.id, noteTitle, noteDesc,date, editedAlarm,editImageList,audioEditFiles )
                 notesViewModel.updateNote(note)
                 view.findNavController().popBackStack(R.id.homeFragment, false)
             } else {
                 Toast.makeText(context, "Please enter note title", Toast.LENGTH_SHORT).show()
             }
         }
+        editImageButton = binding.editNoteAddImage
+        editImageButton.setOnClickListener {
+            AlertDialog.Builder(activity).apply {
+                setTitle("Add Image")
+                setMessage("Choose options")
+                setPositiveButton("Camera") { _, _ ->
+                    checkCameraPermission()
+                }
+                setNegativeButton("Gallery") { _, _ ->
+                    openGallery()
+                }
+            }.create().show()
+        }
     }
+
+    private fun openGallery() {
+        val galleryOpenIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        galleryOpenIntent.addCategory(Intent.CATEGORY_OPENABLE)
+        galleryOpenIntent.type = "image/*"
+        if (galleryOpenIntent.resolveActivity(requireContext().packageManager) != null) {
+            startActivityForResult(galleryOpenIntent, REQUEST_PICK_IMAGE)
+        } else {
+            Toast.makeText(requireContext(), "No gallery app found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                permissions[0]
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                context as Activity,
+                permissions,
+                PERMISSION_REQUEST_CODE
+            )
+        } else {
+            dispatchTakePictureIntent()
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_CAMERA -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    dispatchTakePictureIntent()
+                } else {
+                    Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                return
+            }
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            addImageToList(imageBitmap)
+        } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            val selectedImageUri = data?.data
+            selectedImageUri?.let {
+                val imageBitmap = MediaStore.Images.Media.getBitmap(
+                    requireContext().contentResolver,
+                    selectedImageUri
+                )
+                addImageToList(imageBitmap)
+            }
+        }
+    }
+    private fun addImageToList(imageBitmap: Bitmap) {
+        if (currentNote.imagePaths.size < MAX_IMAGES) {
+            val imagePath = saveImageToInternalStorage(imageBitmap)
+            Log.d("editimagefun",imagePath)
+            currentNote.imagePaths.add(imagePath)
+            Log.d("editimagelistfun", currentNote.imagePaths.toString())
+            //imageAdapter.setImagePath(addNoteImageList)
+            imageEditAdapter.notifyItemInserted(currentNote.imagePaths.size - 1)
+        } else {
+            Toast.makeText(requireContext(), "Maximum limit reached", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun saveImageToInternalStorage(imageBitmap: Bitmap): String {
+        val filename = "${System.currentTimeMillis()}.jpg"
+        val directory = requireContext().filesDir
+        val file = File(directory, filename)
+        try {
+            FileOutputStream(file).use { fos ->
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                fos.flush()
+                fos.close()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        Log.d("savefile on edit",file.absolutePath)
+        return file.absolutePath
+    }
+
     private fun subscribeToAudiFileSharedFlow(){
         var job : Job?= null
         job =CoroutineScope(Dispatchers.Main).launch {

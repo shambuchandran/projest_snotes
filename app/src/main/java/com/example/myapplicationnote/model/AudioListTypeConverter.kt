@@ -6,6 +6,7 @@ import com.google.gson.Gson
 
 
 class AudioListTypeConverter {
+
     @TypeConverter
     fun audioFileListFromString(audioFileString: String?): MutableList<AudioFile> {
         return Gson().fromJson(audioFileString, Array<AudioFile>::class.java).asList().toMutableList()
@@ -14,5 +15,4 @@ class AudioListTypeConverter {
     fun audioFileListToString(audioFileList:MutableList<AudioFile>):String{
         return Gson().toJson(audioFileList)
     }
-
 }

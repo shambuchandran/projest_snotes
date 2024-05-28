@@ -6,10 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.myapplicationnote.model.AudioListTypeConverter
+import com.example.myapplicationnote.model.ImageListTypeConverter
 import com.example.myapplicationnote.model.Note
 
-@Database(entities = [Note::class], version = 1)
-@TypeConverters(AudioListTypeConverter::class)
+@Database(entities = [Note::class], version = 1, exportSchema = false)
+@TypeConverters(AudioListTypeConverter::class,ImageListTypeConverter::class)
 abstract class NoteDatabase : RoomDatabase() {
     abstract fun getNoteDao(): NoteDao
 

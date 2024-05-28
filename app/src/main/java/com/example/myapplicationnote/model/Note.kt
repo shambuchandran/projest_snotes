@@ -18,5 +18,6 @@ data class Note(
     val noteDesc :String,
     val date: String,
     val alarm:String="",
+    val imagePaths:MutableList<String> = mutableListOf(),
     val audioFiles: MutableList<AudioFile>
 ):Parcelable

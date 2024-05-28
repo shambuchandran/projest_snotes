@@ -36,8 +36,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.module.AppGlideModule
 import com.example.myapplicationnote.AlarmReceiver
 import com.example.myapplicationnote.MainActivity
 import com.example.myapplicationnote.R
@@ -236,7 +234,7 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note), MenuProvider {
         val date =
             SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().time)
         if (noteTitle.isNotEmpty()) {
-            val note = Note(0, noteTitle, noteDesc, date, addedAlarm, audioFiles)
+            val note = Note(0, noteTitle, noteDesc, date, addedAlarm,addNoteImageList,audioFiles)
             notesViewModel.addNote(note)
             Toast.makeText(addNoteView.context, "Note Saved", Toast.LENGTH_SHORT).show()
             view.findNavController().popBackStack(R.id.homeFragment, false)
