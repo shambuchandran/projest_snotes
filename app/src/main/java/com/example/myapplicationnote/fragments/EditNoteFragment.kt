@@ -132,7 +132,7 @@ class EditNoteFragment : Fragment(R.layout.fragment_edit_note), MenuProvider {
         }else{
             binding.editNoteShowAlarm.visibility=View.VISIBLE
         }
-        Log.d("edit note","${showEditNoteAlarm.text}${currentNote.alarm}")
+        Log.d("edit note alarm","${showEditNoteAlarm.text}${currentNote.alarm}")
 
 
 

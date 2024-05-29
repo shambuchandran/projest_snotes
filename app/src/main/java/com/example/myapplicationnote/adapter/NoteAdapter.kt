@@ -2,12 +2,16 @@ package com.example.myapplicationnote.adapter
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
+import android.widget.ViewFlipper
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -111,6 +115,29 @@ class NoteAdapter(private val context: Context) :
             val direction = HomeFragmentDirections.actionHomeFragmentToEditNoteFragment(currentNote)
             it.findNavController().navigate(direction)
         }
+        val viewFlipper=holder.itemBinding.imageAvailable
+        if (currentNote.imagePaths.isNotEmpty()){
+
+            viewFlipper.visibility=View.VISIBLE
+            viewFlipper.removeAllViews()
+            currentNote.imagePaths.forEach{imagePath ->
+                val imageView= ImageView(context)
+                imageView.layoutParams=ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                imageView.scaleType= ImageView.ScaleType.CENTER_CROP
+                //imageView.setImageResource(R.drawable.round_add_a_photo_24)
+                viewFlipper.addView(imageView)
+                viewFlipper.startFlipping()
+                android.os.Handler(Looper.getMainLooper()).postDelayed({
+                    imageView.setImageURI(Uri.parse(imagePath))
+                },1500)
+            }
+        }else{
+            viewFlipper.visibility=View.GONE
+        }
+
 
 
     }

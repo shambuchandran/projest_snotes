@@ -58,7 +58,6 @@ class AudioAdapter(private val audioFiles: MutableList<AudioFile>) :
 
         }
         holder.itemView.setOnLongClickListener {
-            println("long click")
             if (File(audioFile.filePath).exists()){
                 AlertDialog.Builder(it.context).apply {
                     setTitle("Delete audio!")

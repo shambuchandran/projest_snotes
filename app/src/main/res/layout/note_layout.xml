@@ -64,13 +64,13 @@
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
                 android:flipInterval="2000"
-                android:background="@drawable/borderstyle"
                 android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/image_flips"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"/>
             </ViewFlipper>
 
             <TextView
