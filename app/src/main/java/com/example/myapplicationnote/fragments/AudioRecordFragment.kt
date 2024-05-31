@@ -111,8 +111,10 @@ class AudioRecordFragment : Fragment(R.layout.fragment_audio_record), Timer.OnTi
         }
         listBtn = binding.btnList
         listBtn.setOnClickListener {
-            Toast.makeText(requireContext(), "list", Toast.LENGTH_SHORT).show()
-
+            if (isRecording) {
+                stopRecording()
+            }
+            findNavController().popBackStack()
         }
         doneBtn = binding.btnDone
         doneBtn.setOnClickListener {
