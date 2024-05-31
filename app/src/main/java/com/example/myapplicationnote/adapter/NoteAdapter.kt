@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Adapter
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
@@ -79,29 +80,33 @@ class NoteAdapter(private val context: Context) :
                 R.drawable.round_play_arrow_24,
                 context.theme
             )
+            audioPlayerBtn.setOnClickListener {
             mediaPlayer = MediaPlayer()
             mediaPlayer.apply {
                 try {
                     mediaPlayer.reset()
                     mediaPlayer.setDataSource(currentNote.audioFiles[0].filePath)
+                    Log.d("on note ", currentNote.audioFiles[0].filePath)
                     mediaPlayer.prepare()
+                    playPausePlayer(context,holder)
                 } catch (e: IOException) {
                     e.printStackTrace()
                     Toast.makeText(context, "Error: Unable to play audio", Toast.LENGTH_SHORT)
                         .show()
                 }
                 setOnCompletionListener {
-                    audioPlayerBtn.background = ResourcesCompat.getDrawable(
+                    holder.itemBinding.audioPlayerBtn.background = ResourcesCompat.getDrawable(
                         context.resources,
                         R.drawable.round_play_arrow_24,
                         context.theme
                     )
                 }
             }
-            audioPlayerBtn.setOnClickListener {
-                playPausePlayer(context)
-            }
 
+            }
+//            audioPlayerBtn.setOnClickListener {
+//                playPausePlayer(context)
+//            }
         } else {
             holder.itemBinding.audioPlayerBtn.visibility = View.GONE
             releaseMediaPlayer()
@@ -142,10 +147,10 @@ class NoteAdapter(private val context: Context) :
 
     }
 
-    private fun playPausePlayer(context: Context) {
+    private fun playPausePlayer(context: Context,holder: NoteViewHolder) {
         if (!mediaPlayer.isPlaying) {
             mediaPlayer.start()
-            audioPlayerBtn.background =
+            holder.itemBinding.audioPlayerBtn.background =
                 ResourcesCompat.getDrawable(
                     context.resources,
                     R.drawable.round_pause_24,
@@ -153,13 +158,14 @@ class NoteAdapter(private val context: Context) :
                 )
         } else {
             mediaPlayer.pause()
-            audioPlayerBtn.background = ResourcesCompat.getDrawable(
+            holder.itemBinding.audioPlayerBtn.background = ResourcesCompat.getDrawable(
                 context.resources,
                 R.drawable.round_play_arrow_24,
                 context.theme
             )
         }
     }
+
 
     fun releaseMediaPlayer() {
         if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
