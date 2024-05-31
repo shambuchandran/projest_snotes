@@ -15,9 +15,9 @@ import java.io.File
 
 
 class ImageAdapter(var context: Context, private var addNoteImageList: MutableList<String>):RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
-
     class ImageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val imageViewEach: ImageView =itemView.findViewById(R.id.imageEachItemView)
+
 
     }
 
@@ -41,6 +41,7 @@ class ImageAdapter(var context: Context, private var addNoteImageList: MutableLi
         Log.d("onbind",imagePathPosition)
         holder.itemView.setOnClickListener{
             println("clicked")
+            //future updates
         }
         holder.itemView.setOnLongClickListener {
             if (File(addNoteImageList[position]).exists()){
